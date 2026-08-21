@@ -20,10 +20,16 @@ services:
       PEEK_ROOT: /workspace
 
     tmpfs:
-      - /tmp:size=16m,mode=1777
+      - /tmp:size=16m,nosuid,nodev,noexec
 
     volumes:
-      - "${PROJECT_PATH:?Set PROJECT_PATH}:/workspace:ro,Z"
+      - type: bind
+        source: ${PROJECT_PATH:?Set PROJECT_PATH}
+        target: /workspace
+        read_only: true
+        bind:
+          create_host_path: false
+          selinux: Z
 
     healthcheck:
       test:
