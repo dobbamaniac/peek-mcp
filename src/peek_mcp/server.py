@@ -6,7 +6,12 @@ from typing import Literal
 
 from mcp.server import MCPServer
 from mcp.types import ToolAnnotations
-from pydantic import BaseModel
+from dataclasses import dataclass
+
+
+# -------------------------------------------------------------------------------------------------
+# Definitions
+# -------------------------------------------------------------------------------------------------
 
 
 # Resolve the workspace root at startup so the server fails immediately if the bind mount is
@@ -38,36 +43,42 @@ DENY_PATTERNS = (
 )
 
 
-class FileEntry(BaseModel):
+@dataclass
+class FileEntry:
     path: str
     kind: Literal["file", "directory", "symlink"]
 
 
-class ListFilesResult(BaseModel):
+@dataclass
+class ListFilesResult:
     path: str
     entries: list[FileEntry]
     truncated: bool
 
 
-class SourceLine(BaseModel):
+@dataclass
+class SourceLine:
     line: int
     text: str
     text_truncated: bool
 
 
-class ReadFileResult(BaseModel):
+@dataclass
+class ReadFileResult:
     path: str
     lines: list[SourceLine]
 
 
-class SearchMatch(BaseModel):
+@dataclass
+class SearchMatch:
     path: str
     line: int
     text: str
     text_truncated: bool
 
 
-class SearchTextResult(BaseModel):
+@dataclass
+class SearchTextResult:
     matches: list[SearchMatch]
     truncated: bool
 
@@ -87,6 +98,11 @@ mcp = MCPServer(
         "Prefer narrow reads and searches."
     ),
 )
+
+
+# -------------------------------------------------------------------------------------------------
+# Internal Functions
+# -------------------------------------------------------------------------------------------------
 
 
 def _relative(path: Path) -> Path:
@@ -149,7 +165,7 @@ def _is_binary(path: Path) -> bool:
 # -------------------------------------------------------------------------------------------------
 
 
-@mcp.tool(annotations=READ_ONLY)
+@mcp.tool(annotations=READ_ONLY, structured_output=True)
 def list_files(
     path: str = ".",
     max_depth: int = 2,
@@ -225,7 +241,7 @@ def list_files(
     )
 
 
-@mcp.tool(annotations=READ_ONLY)
+@mcp.tool(annotations=READ_ONLY, structured_output=True)
 def read_file(
     path: str,
     start_line: int = 1,
@@ -280,7 +296,7 @@ def read_file(
     return ReadFileResult(path=_display(target), lines=output_lines)
 
 
-@mcp.tool(annotations=READ_ONLY)
+@mcp.tool(annotations=READ_ONLY, structured_output=True)
 def search_text(
     query: str,
     path: str = ".",
@@ -374,7 +390,12 @@ def search_text(
     return SearchTextResult(matches=matches, truncated=False)
 
 
-if __name__ == "__main__":
+# -------------------------------------------------------------------------------------------------
+# Main
+# -------------------------------------------------------------------------------------------------
+
+
+def main() -> None:
     mcp.run(
         transport="streamable-http",
         host="0.0.0.0",

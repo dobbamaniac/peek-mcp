@@ -14,13 +14,13 @@ RUN groupadd --gid 10001 mcp \
         --shell /usr/sbin/nologin \
         mcp
 
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+COPY pyproject.toml .
+COPY src/ ./src/
 
-COPY --chown=mcp:mcp server.py .
+RUN pip install --no-cache-dir .
 
 USER mcp:mcp
 
 EXPOSE 8000
 
-CMD ["python", "/app/server.py"]
+CMD ["python", "-m", "peek_mcp"]
