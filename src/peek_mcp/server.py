@@ -20,7 +20,7 @@ ROOT = Path(os.getenv("PEEK_ROOT", "/workspace")).resolve(strict=True)
 
 
 # Bounds keep accidental broad requests from producing excessive filesystem work
-MAX_FILE_BYTES = 1_000_000
+MAX_FILE_BYTES = 1_000_000_000
 MAX_LIST_DEPTH = 5
 MAX_LIST_ENTRIES = 500
 MAX_SEARCH_RESULTS = 50
