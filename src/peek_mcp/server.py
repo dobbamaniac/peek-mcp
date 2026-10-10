@@ -39,6 +39,8 @@ DENY_PATTERNS = (
     "*.env",
     "*.pem",
     "*.key",
+    "*.db",
+    "*.sqlite",
 )
 
 
