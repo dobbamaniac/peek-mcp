@@ -37,8 +37,7 @@ services:
       timeout: 3s
       retries: 5
       start_period: 5s
-    restart: on-failure:3
-
+    restart: unless-stopped
 
   peek-tunnel:
     container_name: peek-tunnel
@@ -47,11 +46,11 @@ services:
       args:
         GIT_SHA: ${TUNNEL_CLIENT_VERSION:-v0.0.10}
     image: peek-tunnel:local
+    user: "65532:65532"
     command:
       - --control-plane.api-key=env:CONTROL_PLANE_API_KEY
       - --control-plane.tunnel-id=${PEEK_TUNNEL_ID:?Set PEEK_TUNNEL_ID in .env}
       - --mcp.server-url=http://peek-server:8000/mcp
-    user: "65532:65532"
     environment:
       LOG_LEVEL: info
       LOG_FORMAT: json
@@ -71,10 +70,9 @@ services:
     depends_on:
       peek-server:
         condition: service_healthy
-    restart: on-failure:3
+    restart: unless-stopped
 
 networks:
   peek-backend:
     internal: true
-
   peek-egress: {}
