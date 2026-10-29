@@ -30,7 +30,6 @@ MAX_LINE_CHARS = 500
 
 # Defense-in-depth checks
 DENY_DIRECTORIES = (
-    ".git",
     "secrets",
 )
 
